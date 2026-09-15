@@ -3,6 +3,7 @@ extends Node
 signal state_changed(shop_id: String)
 
 const APP_GLOBAL := preload("res://global/app_global.gd")
+const SAVE_PATH := "user://traditional_food_map_data.json"
 
 var _shops: Array[Dictionary] = [
 	{"id": "lou_wai_lou", "name": "楼外楼", "category": APP_GLOBAL.CATEGORY_MAIN, "items": ["杭帮菜", "西湖醋鱼"], "position": Vector2(355, 190)},
@@ -22,6 +23,9 @@ var _shops: Array[Dictionary] = [
 var _favorites: Dictionary = {}
 var _blocked: Dictionary = {}
 var _comments: Dictionary = {}
+
+func _ready() -> void:
+	_load_saved_state()
 
 ## Returns all category identifiers exposed by the food directory.
 func GetCategories() -> Array[String]:
@@ -56,6 +60,7 @@ func ToggleFavorite(shop_id: String) -> bool:
 		_favorites.erase(shop_id)
 	else:
 		_favorites[shop_id] = true
+	_save_state()
 	state_changed.emit(shop_id)
 	return _favorites.has(shop_id)
 
@@ -69,6 +74,7 @@ func ToggleBlocked(shop_id: String) -> bool:
 		_blocked.erase(shop_id)
 	else:
 		_blocked[shop_id] = true
+	_save_state()
 	state_changed.emit(shop_id)
 	return _blocked.has(shop_id)
 
@@ -89,6 +95,7 @@ func AddComment(shop_id: String, text: String) -> Dictionary:
 	var comments: Array = _comments.get(shop_id, [])
 	comments.append(comment)
 	_comments[shop_id] = comments
+	_save_state()
 	state_changed.emit(shop_id)
 	return comment
 
@@ -102,3 +109,48 @@ func GetComments(shop_id: String) -> Array[Dictionary]:
 func _shop_matches_query(shop: Dictionary, query: String) -> bool:
 	var searchable := "%s %s %s" % [shop["name"], shop["category"], " ".join(shop["items"])]
 	return query in searchable.to_lower()
+
+func _load_saved_state() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return
+	var saved: Dictionary = parsed
+	for shop_id in saved.get("favorites", []):
+		if shop_id is String and not shop_id.is_empty():
+			_favorites[shop_id] = true
+	for shop_id in saved.get("blocked", []):
+		if shop_id is String and not shop_id.is_empty():
+			_blocked[shop_id] = true
+	var saved_comments: Variant = saved.get("comments", {})
+	if saved_comments is Dictionary:
+		for shop_id in saved_comments:
+			if not shop_id is String:
+				continue
+			var entries: Variant = saved_comments[shop_id]
+			if not entries is Array:
+				continue
+			var valid_entries: Array[Dictionary] = []
+			for entry in entries:
+				if entry is Dictionary and entry.has("date") and entry.has("text"):
+					valid_entries.append({
+						"date": str(entry["date"]),
+						"text": str(entry["text"])
+					})
+			if not valid_entries.is_empty():
+				_comments[shop_id] = valid_entries
+
+func _save_state() -> void:
+	var save_data := {
+		"favorites": _favorites.keys(),
+		"blocked": _blocked.keys(),
+		"comments": _comments
+	}
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		return
+	file.store_string(JSON.stringify(save_data))

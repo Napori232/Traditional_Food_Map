@@ -113,14 +113,14 @@ func _layout_interface() -> void:
 		category_filter.size = Vector2(minf(maxf(220.0, width - 28.0), 490.0), 50)
 		search_box.position = Vector2(width - 268.0, 14)
 		search_box.size = Vector2(254, 50)
-		export_button.position = Vector2(width - 58.0, 72)
+		export_button.position = Vector2(width - 82.0, 72)
 	else:
 		category_filter.position = Vector2(14, 14)
 		category_filter.size = Vector2(maxf(0.0, width - 28.0), 50)
 		search_box.position = Vector2(14, 72)
 		search_box.size = Vector2(maxf(0.0, width - 28.0), 50)
-		export_button.position = Vector2(width - 58.0, 132)
-	export_button.size = Vector2(44, 44)
+		export_button.position = Vector2(width - 82.0, 132)
+	export_button.size = Vector2(68, 44)
 	if shop_detail.visible:
 		if width >= 820.0:
 			shop_detail.position = Vector2(width - 382, 14)

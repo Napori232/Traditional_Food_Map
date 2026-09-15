@@ -3,10 +3,10 @@ extends Button
 signal export_requested
 
 func _ready() -> void:
-	text = "⇩"
+	text = "导出"
 	tooltip_text = "导出收藏与拉黑地图为 PNG"
-	custom_minimum_size = Vector2(44, 44)
-	add_theme_font_size_override("font_size", 22)
+	custom_minimum_size = Vector2(68, 44)
+	add_theme_font_size_override("font_size", 14)
 	add_theme_color_override("font_color", Color("#302c25"))
 	add_theme_color_override("font_hover_color", Color("#302c25"))
 	add_theme_stylebox_override("normal", _style_box(Color("#f7efdf"), Color("#d8c9ac"), 12, 1))
