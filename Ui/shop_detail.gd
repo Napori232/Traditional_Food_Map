@@ -14,10 +14,9 @@ var content: VBoxContainer
 
 func _ready() -> void:
 	visible = false
-	add_theme_stylebox_override("panel", _style_box(Color("#fffaf0"), Color("#d9ccb3"), 16, 1))
+	add_theme_stylebox_override("panel", _style_box(Color("#f7efdf"), Color("#d8c9ac"), 14, 1))
 	content = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 10)
-	content.add_theme_stylebox_override("panel", _style_box(Color("#fffaf0"), Color("#fffaf0"), 16, 0))
 	add_child(content)
 
 ## Shows one shop and its current user-owned state.
@@ -43,7 +42,7 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 	title.text = current_shop.get("name", "")
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.add_theme_font_size_override("font_size", 22)
-	title.add_theme_color_override("font_color", Color("#263936"))
+	title.add_theme_color_override("font_color", Color("#302c25"))
 	head.add_child(title)
 
 	var close := Button.new()
@@ -51,6 +50,11 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 	close.tooltip_text = "关闭"
 	close.custom_minimum_size = Vector2(34, 32)
 	close.add_theme_font_size_override("font_size", 22)
+	close.add_theme_color_override("font_color", Color("#302c25"))
+	close.add_theme_color_override("font_hover_color", Color("#302c25"))
+	close.add_theme_stylebox_override("normal", _style_box(Color("#f7efdf"), Color("#f7efdf"), 8, 0))
+	close.add_theme_stylebox_override("hover", _style_box(Color("#eee2cb"), Color("#eee2cb"), 8, 0))
+	close.add_theme_stylebox_override("pressed", _style_box(Color("#e5d7bc"), Color("#e5d7bc"), 8, 0))
 	close.pressed.connect(_on_close_pressed)
 	head.add_child(close)
 
@@ -64,8 +68,8 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 		tag.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		tag.custom_minimum_size = Vector2(78, 28)
 		tag.add_theme_font_size_override("font_size", 13)
-		tag.add_theme_color_override("font_color", Color("#5f6b5d"))
-		tag.add_theme_stylebox_override("normal", _style_box(Color("#edf1e5"), Color("#cbd9c4"), 8, 1))
+		tag.add_theme_color_override("font_color", Color("#302c25"))
+		tag.add_theme_stylebox_override("normal", _style_box(Color("#f4ead6"), Color("#d4c4a7"), 8, 1))
 		tags.add_child(tag)
 
 	var actions := HBoxContainer.new()
@@ -76,6 +80,7 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 	favorite_button.text = "★ 已收藏" if favorite else "☆ 收藏"
 	favorite_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	favorite_button.custom_minimum_size.y = 40
+	favorite_button.add_theme_color_override("font_color", Color("#302c25"))
 	favorite_button.pressed.connect(_on_favorite_pressed)
 	actions.add_child(favorite_button)
 
@@ -83,24 +88,30 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 	blocked_button.text = "取消拉黑" if blocked else "拉黑"
 	blocked_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	blocked_button.custom_minimum_size.y = 40
+	blocked_button.add_theme_color_override("font_color", Color("#302c25"))
 	blocked_button.pressed.connect(_on_blocked_pressed)
 	actions.add_child(blocked_button)
 
 	var comment_title := Label.new()
 	comment_title.text = "留言"
 	comment_title.add_theme_font_size_override("font_size", 15)
-	comment_title.add_theme_color_override("font_color", Color("#354c45"))
+	comment_title.add_theme_color_override("font_color", Color("#302c25"))
 	content.add_child(comment_title)
 
 	comment_input = TextEdit.new()
 	comment_input.placeholder_text = "写一句话…"
 	comment_input.custom_minimum_size.y = 70
 	comment_input.add_theme_font_size_override("font_size", 14)
+	comment_input.add_theme_color_override("font_color", Color("#302c25"))
+	comment_input.add_theme_color_override("font_placeholder_color", Color("#80745f"))
+	comment_input.add_theme_stylebox_override("normal", _style_box(Color("#fffaf0"), Color("#eadfc8"), 9, 1))
+	comment_input.add_theme_stylebox_override("focus", _style_box(Color("#fffdf7"), Color("#cbb996"), 9, 1))
 	content.add_child(comment_input)
 
 	var publish := Button.new()
 	publish.text = "发布留言"
 	publish.custom_minimum_size.y = 36
+	publish.add_theme_color_override("font_color", Color("#302c25"))
 	publish.pressed.connect(_on_publish_pressed)
 	content.add_child(publish)
 
@@ -114,7 +125,7 @@ func _render_comments(comments: Array[Dictionary]) -> void:
 		var empty := Label.new()
 		empty.text = "还没有留言"
 		empty.add_theme_font_size_override("font_size", 13)
-		empty.add_theme_color_override("font_color", Color("#9c927d"))
+		empty.add_theme_color_override("font_color", Color("#80745f"))
 		comments_box.add_child(empty)
 		return
 	for comment in comments:
@@ -122,7 +133,7 @@ func _render_comments(comments: Array[Dictionary]) -> void:
 		line.text = "%s    %s" % [comment["date"], comment["text"]]
 		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		line.add_theme_font_size_override("font_size", 13)
-		line.add_theme_color_override("font_color", Color("#59645b"))
+		line.add_theme_color_override("font_color", Color("#302c25"))
 		line.add_theme_stylebox_override("normal", _style_box(Color("#f5eddd"), Color("#e4d7bd"), 8, 1))
 		comments_box.add_child(line)
 

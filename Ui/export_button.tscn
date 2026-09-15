@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://Ui/export_button.gd" id="1_export"]
+[ext_resource type="Theme" path="res://Ui/ui_theme.tres" id="2_theme"]
 
 [node name="ExportButton" type="Button"]
+theme = ExtResource("2_theme")
 script = ExtResource("1_export")

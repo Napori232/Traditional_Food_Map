@@ -24,7 +24,7 @@ func _ready() -> void:
 	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	input.custom_minimum_size = Vector2(0, 36)
 	input.add_theme_font_size_override("font_size", 13)
-	input.add_theme_color_override("font_color", Color("#4d554b"))
+	input.add_theme_color_override("font_color", Color("#302c25"))
 	input.add_theme_color_override("font_placeholder_color", Color("#9d927b"))
 	input.add_theme_color_override("caret_color", Color("#8b7857"))
 	input.add_theme_stylebox_override("normal", _style_box(Color("#fffaf0"), Color("#eadfc8"), 9, 1))
@@ -37,8 +37,8 @@ func _ready() -> void:
 	clear_button.tooltip_text = "清空搜索"
 	clear_button.custom_minimum_size = Vector2(34, 34)
 	clear_button.add_theme_font_size_override("font_size", 21)
-	clear_button.add_theme_color_override("font_color", Color("#8b806d"))
-	clear_button.add_theme_color_override("font_hover_color", Color("#635744"))
+	clear_button.add_theme_color_override("font_color", Color("#302c25"))
+	clear_button.add_theme_color_override("font_hover_color", Color("#302c25"))
 	clear_button.add_theme_stylebox_override("normal", _style_box(Color("#f7efdf"), Color("#f7efdf"), 8, 0))
 	clear_button.add_theme_stylebox_override("hover", _style_box(Color("#eee2cb"), Color("#eee2cb"), 8, 0))
 	clear_button.add_theme_stylebox_override("pressed", _style_box(Color("#e5d7bc"), Color("#e5d7bc"), 8, 0))

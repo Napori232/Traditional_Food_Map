@@ -1,7 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://Ui/category_filter.gd" id="1_filter"]
+[ext_resource type="Theme" path="res://Ui/ui_theme.tres" id="2_theme"]
 
 [node name="CategoryFilter" type="PanelContainer"]
 custom_minimum_size = Vector2(220, 50)
+theme = ExtResource("2_theme")
 script = ExtResource("1_filter")

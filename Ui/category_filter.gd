@@ -19,7 +19,7 @@ func SetCategories(categories: Array[String]) -> void:
 		button.text = category
 		button.custom_minimum_size = Vector2(70 if category == "全部" else 82, 34)
 		button.add_theme_font_size_override("font_size", 13)
-		button.add_theme_color_override("font_color", Color("#4a5148"))
+		button.add_theme_color_override("font_color", Color("#302c25"))
 		button.add_theme_stylebox_override("normal", _style_box(Color("#eee5d0"), Color("#d9ccb3"), 10, 1))
 		button.add_theme_stylebox_override("hover", _style_box(Color("#e2eadc"), Color("#90aa96"), 10, 1))
 		button.pressed.connect(_on_category_pressed.bind(category))
