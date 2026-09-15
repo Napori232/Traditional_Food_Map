@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/map/hangzhou_map.tscn" id="2_map"]
+[ext_resource type="PackedScene" path="res://Ui/category_filter.tscn" id="3_filter"]
+[ext_resource type="PackedScene" path="res://Ui/search_box.tscn" id="4_search"]
+[ext_resource type="PackedScene" path="res://Ui/shop_detail.tscn" id="5_detail"]
+[ext_resource type="PackedScene" path="res://Ui/export_button.tscn" id="6_export_button"]
+[ext_resource type="PackedScene" path="res://scenes/export/map_exporter.tscn" id="7_exporter"]
+
+[node name="HangzhouFoodMap" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="HangzhouMap" parent="." instance=ExtResource("2_map")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MapExporter" parent="." instance=ExtResource("7_exporter")]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="CategoryFilter" parent="UILayer" instance=ExtResource("3_filter")]
+offset_right = 490.0
+offset_bottom = 50.0
+
+[node name="SearchBox" parent="UILayer" instance=ExtResource("4_search")]
+offset_left = 884.0
+offset_top = 14.0
+offset_right = 1138.0
+offset_bottom = 64.0
+
+[node name="ExportButton" parent="UILayer" instance=ExtResource("6_export_button")]
+offset_left = 1070.0
+offset_top = 72.0
+offset_right = 1114.0
+offset_bottom = 116.0
+
+[node name="ShopDetail" parent="UILayer" instance=ExtResource("5_detail")]
+
+[node name="Toast" type="Label" parent="UILayer"]
+visible = false
+horizontal_alignment = 1
+vertical_alignment = 1

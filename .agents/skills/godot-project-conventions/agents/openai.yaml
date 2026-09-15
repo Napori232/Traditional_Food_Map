@@ -1,0 +1,7 @@
+interface:
+  display_name: "Godot Project Conventions"
+  short_description: "Apply this project's Godot architecture conventions"
+  default_prompt: "Use $godot-project-conventions when implementing this Godot feature."
+
+policy:
+  allow_implicit_invocation: true

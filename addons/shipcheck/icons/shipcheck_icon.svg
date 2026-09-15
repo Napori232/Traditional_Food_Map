@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="#101827" stroke="#37D399" stroke-width="4"/>
+  <path d="M20 33L28 41L45 23" stroke="#37D399" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g aria-label="Lite badge">
+    <rect x="31" y="46" width="25" height="12" rx="3" fill="#37D399"/>
+    <text x="43.5" y="55" text-anchor="middle" fill="#101827" font-family="Arial, sans-serif" font-size="7" font-weight="700">LITE</text>
+  </g>
+</svg>
