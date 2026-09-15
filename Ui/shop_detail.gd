@@ -5,6 +5,14 @@ signal favorite_requested
 signal blocked_requested
 signal comment_submitted(text: String)
 
+const APP_GLOBAL := preload("res://global/app_global.gd")
+const CATEGORY_COLORS := {
+	APP_GLOBAL.CATEGORY_MAIN: Color("#d46b4d"),
+	APP_GLOBAL.CATEGORY_SNACK: Color("#d49a43"),
+	APP_GLOBAL.CATEGORY_DESSERT: Color("#b9769b"),
+	APP_GLOBAL.CATEGORY_DRINK: Color("#4b8f89")
+}
+
 var current_shop: Dictionary = {}
 var favorite_button: Button
 var blocked_button: Button
@@ -69,7 +77,7 @@ func _build_content(favorite: bool, blocked: bool, comments: Array[Dictionary]) 
 		tag.custom_minimum_size = Vector2(78, 28)
 		tag.add_theme_font_size_override("font_size", 13)
 		tag.add_theme_color_override("font_color", Color("#302c25"))
-		tag.add_theme_stylebox_override("normal", _style_box(Color("#f4ead6"), Color("#d4c4a7"), 8, 1))
+		tag.add_theme_stylebox_override("normal", _category_tag_style_box(current_shop.get("category", "")))
 		tags.add_child(tag)
 
 	var actions := HBoxContainer.new()
@@ -150,6 +158,10 @@ func _on_publish_pressed() -> void:
 	var text := comment_input.text.strip_edges()
 	if not text.is_empty():
 		comment_submitted.emit(text)
+
+func _category_tag_style_box(category: String) -> StyleBoxFlat:
+	var color: Color = CATEGORY_COLORS.get(category, Color("#d8c9ac"))
+	return _style_box(color.lightened(0.7), color.darkened(0.02), 8, 1)
 
 func _style_box(fill: Color, border: Color, radius: int, border_width: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
