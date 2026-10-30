@@ -1,6 +1,12 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/hangzhou_map.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/water_layer.tscn" id="2_water"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/district_layer.tscn" id="3_district"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/road_layer.tscn" id="4_road"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/landmark_layer.tscn" id="5_landmark"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/label_layer.tscn" id="6_label"]
+[ext_resource type="PackedScene" path="res://scenes/map/layers/building_layer.tscn" id="7_building"]
 
 [node name="HangzhouMap" type="Control"]
 layout_mode = 3
@@ -12,7 +18,26 @@ grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("1_map")
 
+[node name="WaterLayer" parent="." instance=ExtResource("2_water")]
+z_index = 2
+
+[node name="DistrictLayer" parent="." instance=ExtResource("3_district")]
+z_index = 1
+
+[node name="BuildingLayer" parent="." instance=ExtResource("7_building")]
+z_index = 3
+
+[node name="RoadLayer" parent="." instance=ExtResource("4_road")]
+z_index = 4
+
+[node name="LandmarkLayer" parent="." instance=ExtResource("5_landmark")]
+z_index = 5
+
+[node name="LabelLayer" parent="." instance=ExtResource("6_label")]
+z_index = 6
+
 [node name="MarkerLayer" type="Control" parent="."]
+z_index = 20
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

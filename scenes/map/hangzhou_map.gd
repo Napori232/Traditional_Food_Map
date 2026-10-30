@@ -3,10 +3,8 @@ extends Control
 signal shop_selected(shop_id: String)
 
 const MARKER_SCENE := preload("res://scenes/map/shop_marker.tscn")
-const WORLD_SIZE := Vector2(1200.0, 820.0)
+const MAP_DATA_SCRIPT := preload("res://Data/map_data.gd")
 const MAP_INK := Color("#5c665d")
-const ROAD_INK := Color("#b4a98d")
-const WATER := Color("#b7d3d0")
 const PAPER := Color("#eee5d0")
 const CATEGORY_COLORS := {
 	"正餐": Color("#d46b4d"),
@@ -23,6 +21,14 @@ var search_mode := false
 var zoom := 1.0
 var pan := Vector2.ZERO
 var marker_layer: Control
+var water_layer: Control
+var district_layer: Control
+var road_layer: Control
+var building_layer: Control
+var landmark_layer: Control
+var label_layer: Control
+var map_data: Node
+var world_size := Vector2.ZERO
 var _dragging := false
 var _drag_origin := Vector2.ZERO
 var _pan_origin := Vector2.ZERO
@@ -31,6 +37,18 @@ var _touch_panning := false
 
 func _ready() -> void:
 	marker_layer = get_node("MarkerLayer")
+	water_layer = get_node("WaterLayer")
+	district_layer = get_node("DistrictLayer")
+	road_layer = get_node("RoadLayer")
+	building_layer = get_node("BuildingLayer")
+	landmark_layer = get_node("LandmarkLayer")
+	label_layer = get_node("LabelLayer")
+	map_data = MAP_DATA_SCRIPT.new()
+	add_child(map_data)
+	world_size = map_data.GetWorldSize()
+	for layer in [water_layer, district_layer, building_layer, road_layer, landmark_layer, label_layer]:
+		layer.SetMapData(map_data)
+	_update_layer_views()
 	mouse_default_cursor_shape = Control.CURSOR_DRAG
 	_refresh_markers()
 	queue_redraw()
@@ -66,13 +84,12 @@ func ZoomOut() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
 		_position_markers()
+		_update_layer_views()
 		queue_redraw()
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), PAPER)
 	_draw_paper_grain()
-	_draw_map_shape()
-	_draw_map_labels()
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -90,6 +107,7 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and _dragging:
 		pan = _pan_origin + (event.position - _drag_origin) / _map_scale()
 		_position_markers()
+		_update_layer_views()
 		queue_redraw()
 	elif event is InputEventScreenTouch:
 		if event.pressed:
@@ -101,6 +119,7 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventScreenDrag and _touch_panning:
 		pan = _pan_origin + (event.position - _touch_origin) / _map_scale()
 		_position_markers()
+		_update_layer_views()
 		queue_redraw()
 
 func _refresh_markers() -> void:
@@ -136,68 +155,20 @@ func _draw_paper_grain() -> void:
 	for y in range(28, int(size.y), 46):
 		draw_line(Vector2(0, y), Vector2(size.x, y + 25), Color(0.37, 0.33, 0.24, 0.02), 1.0)
 
-func _draw_map_shape() -> void:
-	var lake := PackedVector2Array([
-		Vector2(260, 90), Vector2(390, 52), Vector2(530, 70), Vector2(625, 142),
-		Vector2(650, 245), Vector2(620, 370), Vector2(552, 468), Vector2(446, 514),
-		Vector2(348, 475), Vector2(278, 392), Vector2(245, 282), Vector2(242, 170)
-	])
-	var lake_screen := PackedVector2Array()
-	for point in lake:
-		lake_screen.append(_world_to_screen(point))
-	draw_colored_polygon(lake_screen, WATER)
-	draw_polyline(lake_screen + PackedVector2Array([lake_screen[0]]), Color("#6f9997"), 2.0, true)
-
-	var roads := [
-		[Vector2(80, 170), Vector2(290, 190), Vector2(500, 180), Vector2(790, 230), Vector2(1100, 190)],
-		[Vector2(105, 360), Vector2(315, 335), Vector2(520, 355), Vector2(770, 330), Vector2(1110, 390)],
-		[Vector2(175, 580), Vector2(330, 475), Vector2(520, 420), Vector2(760, 470), Vector2(1040, 630)],
-		[Vector2(760, 65), Vector2(720, 220), Vector2(740, 390), Vector2(690, 735)],
-		[Vector2(960, 70), Vector2(880, 240), Vector2(875, 445), Vector2(915, 760)]
-	]
-	for road in roads:
-		var road_screen := PackedVector2Array()
-		for point in road:
-			road_screen.append(_world_to_screen(point))
-		draw_polyline(road_screen, ROAD_INK, 8.0 * _map_scale(), true)
-		draw_polyline(road_screen, Color(0.96, 0.92, 0.82, 0.55), 2.0 * _map_scale(), true)
-
-	var districts := [
-		Rect2(40, 42, 250, 140),
-		Rect2(45, 410, 270, 250),
-		Rect2(690, 35, 360, 155),
-		Rect2(930, 430, 210, 290)
-	]
-	for rect in districts:
-		var corners := PackedVector2Array([
-			_world_to_screen(rect.position),
-			_world_to_screen(rect.position + Vector2(rect.size.x, 0)),
-			_world_to_screen(rect.position + rect.size),
-			_world_to_screen(rect.position + Vector2(0, rect.size.y)),
-			_world_to_screen(rect.position)
-		])
-		draw_polyline(corners, Color(0.35, 0.32, 0.24, 0.18), 1.0, true)
-
-func _draw_map_labels() -> void:
-	var font := ThemeDB.fallback_font
-	draw_string(font, _world_to_screen(Vector2(305, 250)), "西湖", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color(0.18, 0.38, 0.38, 0.5))
-	draw_string(font, _world_to_screen(Vector2(78, 108)), "余杭区", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(78, 390)), "西湖区", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(735, 92)), "拱墅区", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(955, 485)), "上城区", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(112, 155)), "文一西路", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(110, 345)), "天目山路", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(95, 620)), "龙井路", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(785, 206)), "延安路", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.32, 0.24, 0.65))
-	draw_string(font, _world_to_screen(Vector2(925, 680)), "解放路", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.32, 0.24, 0.65))
-
 func _world_to_screen(world_position: Vector2) -> Vector2:
-	return size * 0.5 + (world_position - WORLD_SIZE * 0.5 + pan) * _map_scale()
+	return size * 0.5 + (world_position - world_size * 0.5 + pan) * _map_scale()
 
 func _map_scale() -> float:
-	return minf(size.x / WORLD_SIZE.x, size.y / WORLD_SIZE.y) * 0.92 * zoom
+	return minf(size.x / world_size.x, size.y / world_size.y) * 0.92 * zoom
 
 func _set_zoom(value: float) -> void:
 	zoom = clampf(value, 0.75, 1.8)
 	_position_markers()
+	_update_layer_views()
 	queue_redraw()
+
+func _update_layer_views() -> void:
+	if water_layer == null:
+		return
+	for layer in [water_layer, district_layer, building_layer, road_layer, landmark_layer, label_layer]:
+		layer.SetView(size, world_size, zoom, pan)
